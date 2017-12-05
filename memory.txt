@@ -21,3 +21,7 @@ A: 这个问题看上去土了点——那个数字明明白白的写在Task Man
 sam1111用vadump检查的结果显示进程WorkingSet减小的主要原因是很多DLL在从最小化恢复的时候没有被加载到物理内存。我们知道DLL的一个特点是代码共享，以NTDLL.DLL为例，整个Windows系统的几乎所有应用程序（具体地说，Win32子系统的所有程序）都需要引用NTDLL.DLL，如果每人一份，光这个文件就的占用几十兆内存。Windows地解决办法是只在物理内存中保存一份NTDLL.DLL的COPY，所有引用这个DLL的程序都把这一份COPY映射到自己的内存空间里面，共享NTDLL.DLL的代码段（每个进程的数据段仍然是独立的）。所以虽然NTDLL.DLL的大小被计算在你的程序的WorkingSet里面，但是从你的程序中去掉对这个DLL的引用并不会真的释放多少物理内存——你不用，别人还在用呢！
 所以，你的程序“独占”的物理内存远没有Mem Usage所表示的那么多，需要从Mem Usage里面扣除很多Shared Code Page (vadump里面可以看到）。
 结论？不要参考Task Manager的Mem Usage数据，那个数据的大小对程序性能没有直接影响。用Perfomence Monitor里面与.NET相关的Counter要容易、准确的多
+
+
+更多参考:
+http://shashanzhao.com/archives/832.html
